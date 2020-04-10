@@ -2,12 +2,12 @@ const mongoose = require('mongoose')
 const {Schema} = mongoose
 
 const interactionSchema = new Schema({
-    user_A: {
+    user_a: {
         type: mongoose.Schema.Types.ObjectId,
         ref: 'User',
         required: true
     },
-    user_B: {
+    user_b: {
         type: mongoose.Schema.Types.ObjectId,
         ref: 'User',
         required: true

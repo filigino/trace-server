@@ -5,6 +5,11 @@ const userSchema = new Schema({
     username: {
         type: String,
         required: true,
+        unique: true
+    },
+    username_lower: {
+        type: String,
+        required: true,
         unique: true,
         lowercase: true
     },
@@ -30,10 +35,10 @@ const userSchema = new Schema({
         type: Number,
         min: 0
     },
-    
     sex: {
         type: String,
-        enum: ['F', 'M']
+        enum: ['F', 'M'],
+        uppercase: true
     },
     ethnicity: [{
         type: String,
