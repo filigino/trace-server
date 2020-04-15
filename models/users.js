@@ -1,27 +1,18 @@
 const mongoose = require('mongoose')
 const {Schema} = mongoose
+const passportLocalMongoose = require('passport-local-mongoose')
 
 const userSchema = new Schema({
-    username: {
+    username_stylized: {
         type: String,
         required: true,
         unique: true
-    },
-    username_lower: {
-        type: String,
-        required: true,
-        unique: true,
-        lowercase: true
     },
     email: {
         type: String,
         required: true,
         unique: true,
         lowercase: true
-    },
-    password: {
-        type: String,
-        required: true
     },
     first_name: {
         type: String,
@@ -31,9 +22,8 @@ const userSchema = new Schema({
         type: String,
         required: true
     },
-    age: {
-        type: Number,
-        min: 0
+    birth_date: {
+        type: Date
     },
     sex: {
         type: String,
@@ -69,5 +59,8 @@ const userSchema = new Schema({
 },{
     timestamps: true
 })
+
+// adds username and password fields
+userSchema.plugin(passportLocalMongoose)
 
 module.exports = mongoose.model('User', userSchema)

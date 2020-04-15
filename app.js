@@ -1,33 +1,36 @@
-var createError = require('http-errors')
-var express = require('express')
-var path = require('path')
-var cookieParser = require('cookie-parser')
-var logger = require('morgan')
+const createError = require('http-errors')
+const express = require('express')
+const path = require('path')
+const cookieParser = require('cookie-parser')
+const logger = require('morgan')
+const passport = require('passport')
+const config = require('./config')
 
 // MongoDB
 const mongoose = require('mongoose')
-const Users = require('./models/users')
-const Interactions = require('./models/interactions')
-const url = 'mongodb://localhost:27017/contact'
+mongoose.set('useNewUrlParser', true)
+mongoose.set('useCreateIndex', true)
+mongoose.set('useUnifiedTopology', true)
+const url = config.mongoUrl
 const connect = mongoose.connect(url)
 connect.then(() => {
-    console.log('Connected successfully to MongoDB server')
+    console.log('Connected to MongoDB server')
 }, (err) => { console.log(err) })
 
 // routes
-var indexRouter = require('./routes/index')
-var usersRouter = require('./routes/users')
-// var interactionsRouter = require('./routes/interactions')
+const indexRouter = require('./routes/index')
+const usersRouter = require('./routes/users')
+// const interactionsRouter = require('./routes/interactions')
 
-var app = express()
+const app = express()
 
 // Redirects HTTP requests to HTTPS
 app.all('*', (req, res, next) => {
     if (req.secure) {
         return next()
     } else {
-        // 307 - temporary redirect
-        res.redirect(307, 'https://' + req.hostname + ':' + app.get('secPort') + req.url)
+        // 301 - moved permanently
+        res.redirect(301, 'https://' + req.hostname + ':' + app.get('secPort') + req.url)
     }
 })
 
@@ -39,7 +42,10 @@ app.use(logger('dev'))
 app.use(express.json())
 app.use(express.urlencoded({ extended: false }))
 app.use(cookieParser())
+// publicly accessible
 app.use(express.static(path.join(__dirname, 'public')))
+
+app.use(passport.initialize())
 
 // routes
 app.use('/', indexRouter)
