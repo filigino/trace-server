@@ -8,6 +8,7 @@ const router = express.Router()
 router.use(bodyParser.json())
 
 router.route('/')
+// get user info
 .get(authenticate.verifyUser, (req, res, next) => {
     if (req.user.admin && !req.body.username) {
         Users.find({})
@@ -53,6 +54,7 @@ router.route('/')
     }
 })
 
+// update user info
 .put(authenticate.verifyUser, (req, res, next) => {
     let username
     if (req.user.admin) {
@@ -99,6 +101,7 @@ router.route('/')
         .catch((err) => next(err))
 })
 
+// delete user
 .delete(authenticate.verifyUser, (req, res, next) => {
     let username
     if (req.user.admin) {
@@ -130,6 +133,7 @@ router.route('/')
 })
 
 // custom middleware
+// doesn't need to include email since it's already lowercased automatically
 const usernameToLowerCase = (req, res, next) => {
     req.body.username = req.body.username.toLowerCase()
     next()
@@ -177,7 +181,49 @@ router.post('/signup', (req, res, next) => {
     })
 })
 
-router.post('/login', usernameToLowerCase, passport.authenticate('local'), (req, res) => {
+router.post('/signup/username_availability', (req, res, next) => {
+    Users.findByUsername(req.body.username.toLowerCase())
+        .then((user) => {
+            if (user === null) {
+                res.status(200)
+                res.setHeader('Content-Type', 'application/json')
+                res.json({
+                    success: true,
+                    message: 'Username ' + req.body.username + ' is available!'
+                })
+            } else {
+                res.status(409) // conflict
+                res.setHeader('Content-Type', 'application/json')
+                res.json({
+                    message: 'Username ' + req.body.username + ' is unavailable!'
+                })
+            }
+        }, (err) => next(err))
+        .catch((err) => next(err))
+})
+
+router.post('/signup/email_availability', (req, res, next) => {
+    Users.findOne({email: req.body.email.toLowerCase()})
+        .then((user) => {
+            if (user === null) {
+                res.status(200)
+                res.setHeader('Content-Type', 'application/json')
+                res.json({
+                    success: true,
+                    message: 'Email ' + req.body.email + ' can be used!'
+                })
+            } else {
+                res.status(409) // conflict
+                res.setHeader('Content-Type', 'application/json')
+                res.json({
+                    message: 'Email ' + req.body.email + ' is already in use!'
+                })
+            }
+        }, (err) => next(err))
+        .catch((err) => next(err))
+})
+
+router.post('/login', usernameToLowerCase, passport.authenticate('local'), (req, res, next) => {
     const token = authenticate.getToken({_id: req.user._id})
     res.status(200)
     res.setHeader('Content-Type', 'application/json')
@@ -185,15 +231,15 @@ router.post('/login', usernameToLowerCase, passport.authenticate('local'), (req,
 })
 
 router.put('/password', usernameToLowerCase, passport.authenticate('local'), (req, res, next) => {
-        Users.findByUsername(req.body.username)
-            .then((user) => {
-                user.setPassword(req.body.password_new, () => {
-                    user.save()
-                    res.status(200)
-                    res.send('Password changed!')
-                })
-            }, (err) => next(err))
-            .catch((err) => next(err))
+    Users.findByUsername(req.body.username)
+        .then((user) => {
+            user.setPassword(req.body.password_new, () => {
+                user.save()
+                res.status(200)
+                res.send('Password changed!')
+            })
+        }, (err) => next(err))
+        .catch((err) => next(err))
 })
 
 const getAge = (birthDate) => {

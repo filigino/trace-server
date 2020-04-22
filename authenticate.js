@@ -1,5 +1,4 @@
 const passport = require('passport')
-const LocalStrategy = require('passport-local').Strategy
 const Users = require('./models/users')
 const JwtStrategy = require('passport-jwt').Strategy
 const ExtractJwt = require('passport-jwt').ExtractJwt
@@ -7,7 +6,7 @@ const jwt = require('jsonwebtoken')
 const config = require('./config')
 
 // passport-local-mongoose includes functions, e.g., authenticate(), (de)serializeUser()
-passport.use(new LocalStrategy(Users.authenticate()))
+passport.use(Users.createStrategy())
 // needed for sessions
 passport.serializeUser(Users.serializeUser())
 passport.deserializeUser(Users.deserializeUser())
