@@ -146,7 +146,6 @@ router.post('/signup', (req, res, next) => {
         email: req.body.email,
         firstName: req.body.firstName,
         lastName: req.body.lastName,
-        birthDate: new Date(req.body.birthDate),
         sex: req.body.sex,
         ethnicity: req.body.ethnicity
     }), req.body.password, (err, user) => {
@@ -165,15 +164,25 @@ router.post('/signup', (req, res, next) => {
             res.setHeader('Content-Type', 'application/json')
             res.json(err)
         } else {
-            usernameToLowerCase(req, res, () => {
-                passport.authenticate('local')(req, res, () => {
-                    const token = authenticate.getToken({_id: req.user._id})
-                    res.status(200)
+            if (req.body.birthDate) {
+                user.birthDate = new Date(req.body.birthDate)
+            }
+            user.save((err) => {
+                if (err) {
+                    res.status(500)
                     res.setHeader('Content-Type', 'application/json')
-                    res.json({
-                        success: true,
-                        token: token,
-                        message: 'Registration complete!'
+                    res.json(err)
+                }
+                usernameToLowerCase(req, res, () => {
+                    passport.authenticate('local')(req, res, () => {
+                        const token = authenticate.getToken({_id: req.user._id})
+                        res.status(200)
+                        res.setHeader('Content-Type', 'application/json')
+                        res.json({
+                            success: true,
+                            token: token,
+                            message: 'Registration complete!'
+                        })
                     })
                 })
             })
