@@ -133,7 +133,7 @@ router.route('/')
 })
 
 // custom middleware
-// doesn't need to include email since it's already lowercased automatically
+// doesn't need to include email since it's already lowercased automatically bc of schema
 const usernameToLowerCase = (req, res, next) => {
     req.body.username = req.body.username.toLowerCase()
     next()
@@ -212,7 +212,8 @@ router.post('/signup/username_availability', (req, res, next) => {
 })
 
 router.post('/signup/email_availability', (req, res, next) => {
-    Users.findOne({email: req.body.email.toLowerCase()})
+    // email is already lowercased automatically bc of schema
+    Users.findByUsername(req.body.email)
         .then((user) => {
             if (user === null) {
                 res.status(200)
