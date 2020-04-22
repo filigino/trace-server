@@ -3,7 +3,7 @@ const {Schema} = mongoose
 const passportLocalMongoose = require('passport-local-mongoose')
 
 const userSchema = new Schema({
-    username_stylized: {
+    usernameStylized: {
         type: String,
         required: true,
         unique: true
@@ -14,15 +14,15 @@ const userSchema = new Schema({
         unique: true,
         lowercase: true
     },
-    first_name: {
+    firstName: {
         type: String,
         required: true
     },
-    last_name: {
+    lastName: {
         type: String,
         required: true
     },
-    birth_date: {
+    birthDate: {
         type: Date
     },
     sex: {

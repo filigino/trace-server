@@ -28,15 +28,15 @@ router.route('/')
             .then((user) => {
                 if (user !== null) {
                     const info = {
-                        username: user.username_stylized,
+                        username: user.usernameStylized,
                         email: user.email,
-                        first_name: user.first_name,
-                        last_name: user.last_name,
-                        birth_date: user.birth_date,
+                        firstName: user.firstName,
+                        lastName: user.lastName,
+                        birthDate: user.birthDate,
                         sex: user.sex,
                         ethnicity: user.ethnicity
                     }
-                    if (user.birth_date) info.age = getAge(user.birth_date)
+                    if (user.birthDate) info.age = getAge(user.birthDate)
                     res.status(200)
                     res.setHeader('Content-Type', 'application/json')
                     res.json(info)
@@ -64,14 +64,14 @@ router.route('/')
     Users.findByUsername(username.toLowerCase())
         .then((user) => {
             if (user !== null) {
-                if (req.body.first_name) {
-                    user.first_name = req.body.first_name
+                if (req.body.firstName) {
+                    user.firstName = req.body.firstName
                 }
-                if (req.body.last_name) {
-                    user.last_name = req.body.last_name
+                if (req.body.lastName) {
+                    user.lastName = req.body.lastName
                 }
-                if (req.body.month) {
-                    user.birth_date = new Date(req.body.year + '-' + req.body.month + '-' + req.body.day)
+                if (req.body.birthDate) {
+                    user.birthDate = new Date(req.body.birthDate)
                 }
                 if (req.body.sex) {
                     user.sex = req.body.sex
@@ -114,7 +114,7 @@ router.route('/')
                         res.status(200)
                         res.json({
                             success: true,
-                            message: 'Account for user ' + user.username_stylized + ' deleted!'
+                            message: 'Account for user ' + user.usernameStylized + ' deleted!'
                         })
                     })
             } else {
@@ -138,10 +138,11 @@ const usernameToLowerCase = (req, res, next) => {
 router.post('/signup', (req, res, next) => {
     Users.register(new Users({
         username: req.body.username.toLowerCase(),
-        username_stylized: req.body.username,
+        usernameStylized: req.body.username,
         email: req.body.email,
-        first_name: req.body.first_name,
-        last_name: req.body.last_name,
+        firstName: req.body.firstName,
+        lastName: req.body.lastName,
+        birthDate: new Date(req.body.birthDate),
         sex: req.body.sex,
         ethnicity: req.body.ethnicity
     }), req.body.password, (err, user) => {
@@ -160,25 +161,15 @@ router.post('/signup', (req, res, next) => {
             res.setHeader('Content-Type', 'application/json')
             res.json(err)
         } else {
-            if (req.body.month) {
-                user.birth_date = new Date(req.body.year + '-' + req.body.month + '-' + req.body.day)                
-            }
-            user.save((err) => {
-                if (err) {
-                    res.status(500)
+            usernameToLowerCase(req, res, () => {
+                passport.authenticate('local')(req, res, () => {
+                    const token = authenticate.getToken({_id: req.user._id})
+                    res.status(200)
                     res.setHeader('Content-Type', 'application/json')
-                    res.json(err)
-                }
-                usernameToLowerCase(req, res, () => {
-                    passport.authenticate('local')(req, res, () => {
-                        const token = authenticate.getToken({_id: req.user._id})
-                        res.status(200)
-                        res.setHeader('Content-Type', 'application/json')
-                        res.json({
-                            success: true,
-                            token: token,
-                            message: 'Registration complete!'
-                        })
+                    res.json({
+                        success: true,
+                        token: token,
+                        message: 'Registration complete!'
                     })
                 })
             })
@@ -205,11 +196,11 @@ router.put('/password', usernameToLowerCase, passport.authenticate('local'), (re
             .catch((err) => next(err))
 })
 
-const getAge = (birth_date) => {
+const getAge = (birthDate) => {
     const today = new Date()
-    let age = today.getFullYear() - birth_date.getFullYear()
-    if ((today.getMonth() < birth_date.getMonth())
-        || (today.getMonth() === birth_date.getMonth() && today.getDate() < birth_date.getDate())) {
+    let age = today.getFullYear() - birthDate.getFullYear()
+    if ((today.getMonth() < birthDate.getMonth())
+        || (today.getMonth() === birthDate.getMonth() && today.getDate() < birthDate.getDate())) {
         age--
     }
 
