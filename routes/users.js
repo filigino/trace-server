@@ -190,7 +190,7 @@ router.post('/signup', (req, res, next) => {
     })
 })
 
-router.post('/signup/username_availability', (req, res, next) => {
+router.post('/username_availability', (req, res, next) => {
     Users.findByUsername(req.body.username.toLowerCase())
         .then((user) => {
             if (user === null) {
@@ -211,7 +211,7 @@ router.post('/signup/username_availability', (req, res, next) => {
         .catch((err) => next(err))
 })
 
-router.post('/signup/email_availability', (req, res, next) => {
+router.post('/email_availability', (req, res, next) => {
     // email is already lowercased automatically bc of schema
     Users.findByUsername(req.body.email)
         .then((user) => {
