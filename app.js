@@ -24,15 +24,15 @@ const usersRouter = require('./routes/users')
 
 const app = express()
 
-// Redirects HTTP requests to HTTPS
-app.all('*', (req, res, next) => {
-    if (req.secure) {
-        return next()
-    } else {
-        // 301 - moved permanently
-        res.redirect(301, 'https://' + req.hostname + ':' + app.get('secPort') + req.url)
-    }
-})
+// // Redirects HTTP requests to HTTPS
+// app.all('*', (req, res, next) => {
+//     if (req.secure) {
+//         return next()
+//     } else {
+//         // 301 - moved permanently
+//         res.redirect(301, 'https://' + req.hostname + ':' + app.get('secPort') + req.url)
+//     }
+// })
 
 // view engine setup
 app.set('views', path.join(__dirname, 'views'))
