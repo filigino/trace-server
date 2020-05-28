@@ -1,7 +1,7 @@
 const express = require('express')
 const bodyParser = require('body-parser')
 const passport = require('passport')
-const Users = require('../models/users')
+const Infections = require('../models/infections')
 const authenticate = require('../authenticate')
 
 const router = express.Router()

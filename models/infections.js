@@ -1,7 +1,8 @@
 const mongoose = require('mongoose')
 const {Schema} = mongoose
 
-const interactionSchema = new Schema({
+const infectionSchema = new Schema({
+    
     userA: {
         type: mongoose.Schema.Types.ObjectId,
         ref: 'User',
@@ -21,4 +22,4 @@ const interactionSchema = new Schema({
     }
 })
 
-module.exports = mongoose.model('Interaction', interactionSchema)
+module.exports = mongoose.model('Infection', infectionSchema)

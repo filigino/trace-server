@@ -19,8 +19,7 @@ connect.then(() => {
 
 // routes
 const indexRouter = require('./routes/index')
-const usersRouter = require('./routes/users')
-// const interactionsRouter = require('./routes/interactions')
+const infectedRouter = require('./routes/infected')
 
 const app = express()
 
@@ -49,7 +48,7 @@ app.use(passport.initialize())
 
 // routes
 app.use('/', indexRouter)
-app.use('/users', usersRouter)
+app.use('/infected', infectedRouter)
 
 // catch 404 and forward to error handler
 app.use(function(req, res, next) {
