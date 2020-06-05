@@ -3,7 +3,6 @@ const express = require('express')
 const path = require('path')
 const cookieParser = require('cookie-parser')
 const logger = require('morgan')
-const passport = require('passport')
 const config = require('./config')
 
 // MongoDB
@@ -19,7 +18,7 @@ connect.then(() => {
 
 // routes
 const indexRouter = require('./routes/index')
-const infectedRouter = require('./routes/infected')
+const infectionsRouter = require('./routes/infections')
 
 const app = express()
 
@@ -44,11 +43,9 @@ app.use(cookieParser())
 // publicly accessible
 app.use(express.static(path.join(__dirname, 'public')))
 
-app.use(passport.initialize())
-
 // routes
 app.use('/', indexRouter)
-app.use('/infected', infectedRouter)
+app.use('/infections', infectionsRouter)
 
 // catch 404 and forward to error handler
 app.use(function(req, res, next) {
