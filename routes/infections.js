@@ -17,7 +17,7 @@ const clean = () => {
     })
 }
 
-cron.schedule('* */24 * * *', () => {
+cron.schedule('* */24 * * *', () => { // every 24 hours
     clean()
 })
 
@@ -35,8 +35,8 @@ router.route('/')
 .post((req, res, next) => {
     Infections.findOne()
     .then((infections) => {
-        for (const ID of req.body.IDs) {
-            infections.infections.push(ID)
+        for (const id of req.body.ids) {
+            infections.infections.push(id)
         }
         infections.save()
         .then(() => {

@@ -4,7 +4,7 @@ const {Schema} = mongoose
 const infectionSchema = new Schema({
     infections: [
         {
-            ID: {
+            id: {
                 type: String
             },
             createdAt: {
